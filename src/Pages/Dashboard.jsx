@@ -1,35 +1,43 @@
-import React, { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Cars from "../Data/Cars";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
+import SkeletonDashboard from "./SkeletonDashboard";
+import React, { useState, useEffect } from "react";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { id } = useParams();
+
+
+  const [loading, setLoading] = useState(true);
+  const [likedCars, setLikedCars] = useState({});
   const idx = !isNaN(+id) ? +id : 0;
   const car = Cars[idx];
-
   const [mainImage, setMainImage] = useState(car?.image || "");
-  const [likedCars, setLikedCars] = useState({});
 
-  const toggleLike = (carIndex) => {
-    setLikedCars((prev) => ({
-      ...prev,
-      [carIndex]: !prev[carIndex],
-    }));
-  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
-  if (!car) {
-    return <p className="text-center text-2xl mt-20">Car not found</p>;
-  }
+  
+  if (loading) return <SkeletonDashboard />;
+  if (!car) return <p className="text-center text-2xl mt-20">Car not found</p>;
+
+
 
   return (
-    <div className="bg-gray-50 h-screen flex flex-col">
+    <div className="bg-gray-50 min-h-screen flex flex-col">
       <Navbar />
 
       <main className="flex-1 px-6 lg:px-12 mt-6 flex gap-6">
-        
+        {/* Sidebar */}
         <aside className="w-64 hidden lg:block border-r border-white bg-white p-4">
+          {/* Sidebar Filters */}
           <div className="mb-6">
             <h3 className="font-bold mb-2 text-gray-300">TYPE</h3>
             <div className="flex flex-col gap-2 text-sm text-gray-600">
@@ -55,15 +63,15 @@ export default function Dashboard() {
           <div>
             <h3 className="font-bold mb-2 text-gray-300">PRICE</h3>
             <input type="range" min="0" max="100" className="w-full accent-blue-500" />
-            <p className="text-sm text-gray-600">Max. $100.00 </p>
+            <p className="text-sm text-gray-600">Max. $100.00</p>
           </div>
         </aside>
 
-        {/* Main Content */}
-        <section className="flex-1 space-y-8">
-          
+        {/* HERO + CAR DETAILS + REVIEWS */}
+        <section className="flex-1 space-y-10">
+          {/* HERO */}
           <div className="grid md:grid-cols-2 gap-6">
-        
+            {/* Left: Hero Info */}
             <div className="bg-[#3563E9] text-white rounded-xl p-6">
               <h2 className="text-xl font-semibold mb-2">
                 Sports car with the best design and acceleration
@@ -77,8 +85,8 @@ export default function Dashboard() {
                 className="w-full h-44 object-contain rounded"
               />
 
-              
-              <div className="flex gap-3 mt-4">
+              {/* Thumbnails (Desktop) */}
+              <div className="hidden md:flex gap-3 mt-4">
                 {[car.image, "/View-2.jpg", "/View-3.jpg"].map((img, i) => (
                   <img
                     key={i}
@@ -91,7 +99,20 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Car Details */}
+            {/* Thumbnails (Mobile) */}
+            <div className="md:hidden flex gap-3">
+              {[car.image, "/View-2.jpg", "/View-3.jpg"].map((img, i) => (
+                <img
+                  key={i}
+                  src={img}
+                  alt={`thumb-mobile-${i}`}
+                  onClick={() => setMainImage(img)}
+                  className={`w-24 h-20 rounded-lg object-cover cursor-pointer border ${mainImage === img ? "border-blue-500" : "border-transparent"}`}
+                />
+              ))}
+            </div>
+
+            {/* Right: Car Details */}
             <div className="bg-white shadow rounded-xl p-6">
               <div className="flex justify-between items-start">
                 <h2 className="text-xl font-bold">{car.name}</h2>
@@ -107,7 +128,7 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              {/* Rating Stars */}
+              {/* Rating */}
               <div className="flex items-center gap-1 text-yellow-400 mb-2">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <span key={i}>★</span>
@@ -133,7 +154,7 @@ export default function Dashboard() {
                     <p className="text-gray-400 line-through">${car.oldPrice}.00</p>
                   )}
                   <p className="text-xl font-bold text-blue-600">
-                    ${(car.price ?? car.price)}.00 / day
+                    ${car.price}.00 / day
                   </p>
                 </div>
                 <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300">
@@ -143,7 +164,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* ✅ Reviews Section (added from second code) */}
+          {/* REVIEWS */}
           <div className="bg-white shadow rounded-xl p-6">
             <h3 className="font-semibold mb-4">Reviews (13)</h3>
             <div className="space-y-6">
@@ -159,9 +180,7 @@ export default function Dashboard() {
                     <span className="text-sm text-gray-400">21 July 2022</span>
                   </div>
                   <p className="text-sm text-gray-600 mt-2">
-                    We are very happy with the service from the MORENT App. Morent has a low price
-                    and also a large variety of cars with good and comfortable facilities. In addition,
-                    the services provided by the officers are also friendly and very polite.
+                    We are very happy with the service from the MORENT App.
                   </p>
                   <div className="text-yellow-400 mt-2">★★★★☆</div>
                 </div>
@@ -179,125 +198,84 @@ export default function Dashboard() {
                     <span className="text-sm text-gray-400">20 July 2022</span>
                   </div>
                   <p className="text-sm text-gray-600 mt-2">
-                    We are greatly helped by the services of the MORENT Application. Morent has a low price
-                    and also a large variety of cars with good and comfortable facilities. In addition,
-                    the services provided by the officers are also friendly and very polite.
+                    We are greatly helped by the services of the MORENT Application.
                   </p>
                   <div className="text-yellow-400 mt-2">★★★★☆</div>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Recent Cars */}
-          <div>
-            <div className="flex justify-between items-center mb-3 px-4 pr-9">
-              <h3 className="text-2xl font-bold text-gray-400">Recent Cars</h3>
-              <Link to="/" className="text-blue-600 hover:underline">View All</Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-90">
-              {Cars.slice(0, 3).map((c, i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-lg shadow-md p-4 w-[317px] h-[388px] flex flex-col relative hover:shadow-lg transition-shadow duration-300"
-                >
-                  {/* Like Button */}
-                  <div
-                    className="absolute top-4 right-4 cursor-pointer transform transition-all duration-300 hover:scale-110 hover:opacity-80"
-                    onClick={() => toggleLike(i)}
-                  >
-                    <img
-                      src={likedCars[i] ? "/Like.png" : "/Like-2.png"}
-                      alt="Like"
-                      className="w-6 h-6"
-                    />
-                  </div>
-
-                  {/* Car Info */}
-                  <h3 className="font-semibold text-gray-800 text-lg">{c.name}</h3>
-                  <p className="text-sm text-gray-500">{c.type}</p>
-
-                  {/* Car Image */}
-                  <img src={c.image} alt={c.name} className="w-full h-40 object-contain mb-4" />
-
-                  {/* Car Details */}
-                  <div className="mt-4 flex justify-between text-gray-500 text-sm">
-                    <div className="flex items-center gap-1">
-                      <img src="/gas-station.png" alt="fuel" className="w-4 h-4" />
-                      <span>{c.fuel}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <img src="/manual.png" alt="transmission" className="w-4 h-4" />
-                      <span>{c.transmission}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <img src="/people.png" alt="people" className="w-4 h-4" />
-                      <span>{c.people}</span>
-                    </div>
-                  </div>
-
-                  {/* Price */}
-                  <p className="mt-3 text-blue-600 font-bold">${c.price}.00/day</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Recommended Cars */}
-          <div className="mt-10">
-            <div className="flex justify-between items-center mb-3 pr-9">
-              <h3 className="text-2xl font-bold">Recommended Cars</h3>
-              <Link to="/" className="text-blue-600 hover:underline">View All</Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-90">
-              {Cars.slice(3, 6).map((c, i) => (
-                <div
-                  key={i + 4}
-                  className="bg-white rounded-lg shadow-md p-4 w-[317px] h-[388px]  flex flex-col relative hover:shadow-lg transition-shadow duration-300"
-                >
-                  {/* Like Button */}
-                  <div
-                    className="absolute top-4 right-4 cursor-pointer transform transition-all duration-300 hover:scale-110 hover:opacity-80"
-                    onClick={() => toggleLike(i + 4)}
-                  >
-                    <img
-                      src={likedCars[i + 4] ? "/Like.png" : "/Like-2.png"}
-                      alt="Like"
-                      className="w-6 h-6"
-                    />
-                  </div>
-
-                  {/* Car Info */}
-                  <h3 className="font-semibold text-gray-800 text-lg">{c.name}</h3>
-                  <p className="text-sm text-gray-500">{c.type}</p>
-
-                  {/* Car Image */}
-                  <img src={c.image} alt={c.name} className="w-full h-40 object-contain mb-4" />
-
-                  {/* Car Details */}
-                  <div className="mt-4 flex justify-between text-gray-500 text-sm">
-                    <div className="flex items-center gap-1">
-                      <img src="/gas-station.png" alt="fuel" className="w-4 h-4" />
-                      <span>{c.fuel}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <img src="/manual.png" alt="transmission" className="w-4 h-4" />
-                      <span>{c.transmission}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <img src="/people.png" alt="people" className="w-4 h-4" />
-                      <span>{c.people}</span>
-                    </div>
-                  </div>
-
-                  {/* Price */}
-                  <p className="mt-3 text-blue-600 font-bold">${c.price}.00/day</p>
-                </div>
-              ))}
-            </div>
-          </div>
         </section>
       </main>
+
+      {/* ================= RECENT & RECOMMENDED ================= */}
+      <section className="px-6 lg:px-12 space-y-10 mt-10 ite ">
+        {/* Recent Cars */}
+        <div>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-xl md:text-2xl font-bold text-gray-400">Recent Cars</h3>
+            <Link to="/" className="text-blue-600 hover:underline text-sm md:text-base">
+              View All
+            </Link>
+          </div>
+          <div className="flex gap-4 overflow-x-auto md:grid md:grid-cols-4 md:gap-6 md:overflow-visible">
+            {Cars.slice(0, 3).map((c, i) => (
+              <div key={i} className="flex-shrink-0 w-[280px] md:w-auto">
+                <div className="bg-white rounded-lg shadow-md p-4 relative hover:shadow-lg transition-shadow duration-300">
+                  {/* Like Button */}
+                  <div
+                    className="absolute top-4 right-4 cursor-pointer hover:scale-110 transition"
+                    onClick={() => toggleLike(i + 100)}
+                  >
+                    <img
+                      src={likedCars[i + 100] ? "/Like.png" : "/Like-2.png"}
+                      alt="Like"
+                      className="w-6 h-6"
+                    />
+                  </div>
+                  <h3 className="font-semibold text-gray-800 text-lg">{c.name}</h3>
+                  <p className="text-sm text-gray-500">{c.type}</p>
+                  <img src={c.image} alt={c.name} className="w-full h-40 object-contain mb-4" />
+                  <p className="mt-3 text-blue-600 font-bold">${c.price}.00/day</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recommended Cars */}
+        <div>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-xl md:text-2xl font-bold">Recommended Cars</h3>
+            <Link to="/" className="text-blue-600 hover:underline text-sm md:text-base">
+              View All
+            </Link>
+          </div>
+          <div className="flex gap-4 overflow-x-auto md:grid md:grid-cols-4 md:gap-6 md:overflow-visible">
+            {Cars.slice(3, 6).map((c, i) => (
+              <div key={i} className="flex-shrink-0 w-[280px] md:w-auto">
+                <div className="bg-white rounded-lg shadow-md p-4 relative hover:shadow-lg transition-shadow duration-300">
+                  {/* Like Button */}
+                  <div
+                    className="absolute top-4 right-4 cursor-pointer hover:scale-110 transition"
+                    onClick={() => toggleLike(i + 200)}
+                  >
+                    <img
+                      src={likedCars[i + 200] ? "/Like.png" : "/Like-2.png"}
+                      alt="Like"
+                      className="w-6 h-6"
+                    />
+                  </div>
+                  <h3 className="font-semibold text-gray-800 text-lg">{c.name}</h3>
+                  <p className="text-sm text-gray-500">{c.type}</p>
+                  <img src={c.image} alt={c.name} className="w-full h-40 object-contain mb-4" />
+                  <p className="mt-3 text-blue-600 font-bold">${c.price}.00/day</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <Footer />
     </div>
