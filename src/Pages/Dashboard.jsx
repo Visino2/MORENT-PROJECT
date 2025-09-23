@@ -1,4 +1,3 @@
-
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Cars from "../Data/Cars";
 import Navbar from "../Components/Navbar";
@@ -9,7 +8,6 @@ import React, { useState, useEffect } from "react";
 export default function Dashboard() {
   const navigate = useNavigate();
   const { id } = useParams();
-
 
   const [loading, setLoading] = useState(true);
   const [likedCars, setLikedCars] = useState({});
@@ -24,11 +22,8 @@ export default function Dashboard() {
     return () => clearTimeout(timer);
   }, []);
 
-  
   if (loading) return <SkeletonDashboard />;
   if (!car) return <p className="text-center text-2xl mt-20">Car not found</p>;
-
-
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col">
@@ -157,14 +152,17 @@ export default function Dashboard() {
                     ${car.price}.00 / day
                   </p>
                 </div>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                <button
+                  onClick={() => navigate(`/rent/${idx}`)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300"
+                >
                   Rent Now
                 </button>
               </div>
             </div>
           </div>
 
-          {/* REVIEWS */}
+        {/* REVIEWS */}
           <div className="bg-white shadow rounded-xl p-6">
             <h3 className="font-semibold mb-4">Reviews (13)</h3>
             <div className="space-y-6">
@@ -209,7 +207,7 @@ export default function Dashboard() {
       </main>
 
       {/* ================= RECENT & RECOMMENDED ================= */}
-      <section className="px-6 lg:px-12 space-y-10 mt-10 ite ">
+      <section className="px-6 lg:px-12 space-y-10 mt-10 ">
         {/* Recent Cars */}
         <div>
           <div className="flex justify-between items-center mb-3">
@@ -237,6 +235,13 @@ export default function Dashboard() {
                   <p className="text-sm text-gray-500">{c.type}</p>
                   <img src={c.image} alt={c.name} className="w-full h-40 object-contain mb-4" />
                   <p className="mt-3 text-blue-600 font-bold">${c.price}.00/day</p>
+                  {/* Rent Now Button */}
+                  <button
+                    onClick={() => navigate(`/rent/${i + 100}`)}
+                    className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300"
+                  >
+                    Rent Now
+                  </button>
                 </div>
               </div>
             ))}
@@ -270,6 +275,13 @@ export default function Dashboard() {
                   <p className="text-sm text-gray-500">{c.type}</p>
                   <img src={c.image} alt={c.name} className="w-full h-40 object-contain mb-4" />
                   <p className="mt-3 text-blue-600 font-bold">${c.price}.00/day</p>
+                  {/* Rent Now Button */}
+                  <button
+                    onClick={() => navigate(`/rent/${i + 200}`)}
+                    className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300"
+                  >
+                    Rent Now
+                  </button>
                 </div>
               </div>
             ))}
