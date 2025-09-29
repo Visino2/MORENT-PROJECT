@@ -5,6 +5,8 @@ import Card from "../Components/Card";
 import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
 import Skeleton from "./Skeleton";
+import { motion } from "framer-motion";
+
 
  function Landing() {
     const navigate = useNavigate();
@@ -30,30 +32,77 @@ import Skeleton from "./Skeleton";
         <Navbar />
         
         <main className="p-6 ">
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-[#54A6FF] text-white p-6 rounded-lg overflow-hidden  relative w-full md:w-[640px] md:h-[360px] ">
-                    <h2 className="text-2xl  md:text-3xl font-bold mb-4">The Best Platform for Car Rental</h2>
-                    <p className="mb-7 ">Ease of doing car rental safely and reliably. Of course at low price.</p>
-                    <button className=" text-white bg-[#3563E9] px-4 py-2 font-semibold rounded w-fit  hover:bg-blue-800">
-                       Rental Car
-                    </button>
-                    <div className="flex justify-center mt-0 ">
-                     <img src="/image-7.png" alt="koenigsegg" className=" w-[280px] md:w-[406px] h-auto"  />
-                     </div>
-                </div>
+              <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left Hero Card */}
+          <motion.div
+            className="bg-[#54A6FF] text-white p-6 rounded-lg overflow-hidden relative w-full md:w-[640px] md:h-[360px]"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            whileHover={{ scale: 1.02 }}
+          >
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">
+              The Best Platform for Car Rental
+            </h2>
+            <p className="mb-7">
+              Ease of doing car rental safely and reliably. Of course at low price.
+            </p>
+            <motion.button
+              className="text-white bg-[#3563E9] px-4 py-2 font-semibold rounded w-fit hover:bg-blue-800"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Rental Car
+            </motion.button>
+            <motion.div
+              className="flex justify-center mt-0"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.3 }}
+            >
+              <img
+                src="/image-7.png"
+                alt="koenigsegg"
+                className="w-[280px] md:w-[406px] h-auto"
+              />
+            </motion.div>
+          </motion.div>
 
-
-                 <div className="bg-[#3563E9] hidden md:block text-white p-6 rounded-lg overflow-hidden relative w-full  md:w-[640px] md:h-[360px] ">
-                      <h2 className="text-2xl md:3xl font-bold mb-4 ">Easy way to rent a car at alow price</h2>
-                      <p className="mb-7 ">Providing cheap car rental services and safe and comfortable facilities</p>
-                      <button className=" text-white bg-[#54A6FF] px-4 py-2 font-semibold rounded w-fit  hover:bg-blue-900">
-                        Rental Car
-                      </button>
-                    <div  className="flex justify-center mt-0 ">
-                          <img src="/NissanGT-R.png" alt="nissan-Gt" className="w-[240] md:w-[340px] h-auto" />
-                    </div>
-                 </div>
-            </section>
+          {/* Right Hero Card */}
+          <motion.div
+            className="bg-[#3563E9] hidden md:block text-white p-6 rounded-lg overflow-hidden relative w-full md:w-[640px] md:h-[360px]"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+            whileHover={{ scale: 1.02 }}
+          >
+            <h2 className="text-2xl md:3xl font-bold mb-4">
+              Easy way to rent a car at a low price
+            </h2>
+            <p className="mb-7">
+              Providing cheap car rental services and safe and comfortable facilities
+            </p>
+            <motion.button
+              className="text-white bg-[#54A6FF] px-4 py-2 font-semibold rounded w-fit hover:bg-blue-900"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Rental Car
+            </motion.button>
+            <motion.div
+              className="flex justify-center mt-0"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.5 }}
+            >
+              <img
+                src="/NissanGT-R.png"
+                alt="nissan-Gt"
+                className="w-[240px] md:w-[340px] h-auto"
+              />
+            </motion.div>
+          </motion.div>
+        </section>
 
         <section className= " flex flex-col md:flex-row justify-center items-center gap-6 mt-6">
                 <div className="bg-white p-6 shadow rounded-lg w-full md:w-[582px] ">
@@ -132,11 +181,18 @@ import Skeleton from "./Skeleton";
                     <h2 className="text-xl font-medium text-gray-300">Popular Car </h2>
                     <a href="#" className="text-blue-600 font-bold hover:underline">View All</a>
                   </div>
-                  <div className="flex overflow-x-auto md:grid w-full md:grid-cols-4 gap-6                                                                                              ">
-                       {Cars.slice(0, 4).map((car, index) => (
-                        <Card key={index} car={car} index={index} layout="popular" />      
-                     ))}
-                   </div>
+                     <div className="flex overflow-x-auto md:grid w-full md:grid-cols-4 gap-6">
+                      {Cars.slice(0, 4).map((car, index) => (
+                      <motion.div
+                       key={index}
+                       initial={{ opacity: 0, y: 40 }}
+                       animate={{ opacity: 1, y: 0 }}
+                       transition={{ duration: 0.6, delay: index * 0.2, ease: "easeOut" }}
+                      >
+                    <Card car={car} index={index} layout="popular" />
+                     </motion.div>
+                      ))}
+                    </div>
             </section>
              <section className="mt-10">
                      <h2 className="text-2xl font-medium text-gray-300 mb-4">Recommended Car</h2>

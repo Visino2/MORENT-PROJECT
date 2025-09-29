@@ -1,13 +1,17 @@
-import React, { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Cars from "../Data/Cars"
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
-import { div } from "framer-motion/client";
+import { motion } from "framer-motion";
+import SkeletonLoader from "../Pages/SkeletonLoader"
+import React, { useState, useEffect } from "react";
+import DashboardChart from "../Pages/DashboardChart";
+
+
 
 export default function CarRentalBooking({ selectedCard = 1 }) {
    const { id } = useParams();
-  const selectedCar = Cars[id]; // use id from URL
+  const selectedCar = Cars[id]; 
 
   const tax = 0;
   const subtotal = selectedCar.price;
@@ -24,12 +28,10 @@ export default function CarRentalBooking({ selectedCard = 1 }) {
         pickUpTime:'',
         dropUpTime:'',
         paymentMethod:'',
-        cardNumber:'',
-        cardNumber:'',
         expirationDate:'',
         cardHolder:'',
         cvc:'',
-        markertingConsent: false,
+        marketingConsent: false,
         paymentConsent: false
     });
 
@@ -44,6 +46,22 @@ export default function CarRentalBooking({ selectedCard = 1 }) {
         console.log('Form submitted:', selectedCar);
         //handle form submission
     }
+    const navigate = useNavigate();
+   
+       const [loading, setLoading ] = useState(true);
+   
+       useEffect(() => {
+           setTimeout(() => {
+               setLoading(false);
+           }, 3000);
+       }, []);
+   
+   
+       if (loading) {
+           return (
+               <SkeletonLoader />
+           )
+       }
     return (
         <div className="min-h-screen bg-gray-50">
             <Navbar />
@@ -73,7 +91,7 @@ export default function CarRentalBooking({ selectedCard = 1 }) {
                                          <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
                                             <input type="tel" 
-                                             name="PhoneNumber"
+                                             name="phoneNumber"
                                              value={formData.phoneNumber}
                                              onChange={handleinputchange}
                                              placeholder="Phone number"
@@ -100,7 +118,10 @@ export default function CarRentalBooking({ selectedCard = 1 }) {
                                         </div>
                                     </div>
                                 </div>
+                                </div>
+                                </div>
 
+                                 <div className="bg-white rounded-lg shadow-sm p-6 mt-10" >
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-lg font-bold text-gray-900">Rental Info</h3>
                                     <span className="text-sm text-gary-500"> Step 2 of 4</span>
@@ -156,8 +177,10 @@ export default function CarRentalBooking({ selectedCard = 1 }) {
 
                                    </div>
                                  </div>
+                                 
 
-                                 <div>
+                                 
+                                      <div>
                                     <div className="flex items-center mb-4">
                                         <h3 className="font-semibold mb-4 flex items-center gap-2">
                                     <input type="radio" className="w-4 h-4 accent-blue-500"/>Drop -off</h3>
@@ -205,8 +228,10 @@ export default function CarRentalBooking({ selectedCard = 1 }) {
 
                                    </div>
                                  </div>
-                            </div>
-                        </div>
+                                 </div>
+                                
+                               
+                      
 
                          <div className="bg-white rounded-lg shadow-sm p-6 mt-10" >
                             <div className="flex justify-between items-center mb-4">
@@ -285,7 +310,7 @@ export default function CarRentalBooking({ selectedCard = 1 }) {
                                     id="paypal"
                                     name="paymentMethod"
                                     value="paypal"
-                                    checked={formData.paymentMethod === 'Paypal'}
+                                  checked={formData.paymentMethod === 'paypal'}
                                     onChange={handleinputchange}
                                     className="w-4 h-4 text-blue-600 focus:ring-blue-500"/>
                                    <label htmlFor="paypal" className="ml-2 text-sm font-bold text-gray-900">PayPal</label>
@@ -325,7 +350,7 @@ export default function CarRentalBooking({ selectedCard = 1 }) {
                                 <input 
                                 type="checkbox"
                                 id="marketing"
-                                checked={formData.markertingConsent}
+                                checked={formData.marketingConsent}
                                 onChange={handleinputchange} 
                                 className="w-4 h-4 text-blue-600 focus:ring-blue-500 mt-1 mr-3"/>
                                 <label htmlFor="marketing" className="text-sm text-gray-700">
@@ -400,17 +425,22 @@ export default function CarRentalBooking({ selectedCard = 1 }) {
               <span className="font-medium">${tax}</span>
             </div>
           </div>
-           <div className="mb-6">
-              <div className="flex gap-2">
-                  <input 
-                  type="text"
-                  placeholder="Apply promo code"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 text-sm focus:outline-none" />
-                  <button className="px-4 py-2 text-sm font-bold text-gray-700 hover:text-blue-600 transition-colors">
-                     Apply now
-                  </button>
+             <div className="mb-6">
+         <div className="flex gap-2">
+           <input 
+             type="text"
+             placeholder="Apply promo code"
+             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 text-sm focus:outline-none" 
+            />
+            <button 
+             onClick={() => navigate("/dashboardchart")} 
+             className="px-4 py-2 text-sm font-bold text-gray-700 hover:text-blue-600 transition-colors"
+             >
+              Apply now
+            </button>
               </div>
-           </div>
+              </div>
+
           <div className="border-t border-gray-300 pt-4">
             <div className="flex justify-between items-center">
              <div className="flex flex-col">
@@ -425,7 +455,7 @@ export default function CarRentalBooking({ selectedCard = 1 }) {
         </div>
          </div>
 
-                </div>
+           </div>
 
             </div>
             <Footer />

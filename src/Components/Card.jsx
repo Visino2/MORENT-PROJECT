@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function Card({ car, index, layout = "default" }) {
   const [liked, setLiked] = useState(false);
@@ -13,15 +14,19 @@ export default function Card({ car, index, layout = "default" }) {
   };
 
   return (
-    <div
-      className={`bg-white rounded-lg shadow-md p-4 relative hover:shadow-lg transition-shadow duration-300
+    <motion.div
+      className={`bg-white rounded-lg shadow-md p-4 relative
         ${layout === "popular" ? "flex-shrink-0 w-[80%] sm:w-[60%] md:w-auto" : ""}
         ${layout === "recommended" ? "flex flex-row items-center gap-4" : "flex flex-col"}
       `}
+      whileHover={{ scale: 1.03, boxShadow: "0px 8px 20px rgba(0,0,0,0.12)" }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 200, damping: 15 }}
     >
       {/* Like Button */}
-      <div
-        className="absolute top-4 right-4 cursor-pointer transform transition-all duration-300 hover:scale-110 hover:opacity-80"
+      <motion.div
+        className="absolute top-4 right-4 cursor-pointer"
+        whileTap={{ scale: 0.7 }}
         onClick={() => setLiked(!liked)}
       >
         <img
@@ -29,10 +34,13 @@ export default function Card({ car, index, layout = "default" }) {
           alt="Like"
           className="w-6 h-6"
         />
-      </div>
+      </motion.div>
 
       {/* Car Image */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
         className={`${
           layout === "recommended"
             ? "w-[140px] h-[90px] flex-shrink-0 flex justify-center"
@@ -47,7 +55,7 @@ export default function Card({ car, index, layout = "default" }) {
           }`}
           loading="lazy"
         />
-      </div>
+      </motion.div>
 
       {/* Car Info + Details */}
       <div
@@ -103,14 +111,16 @@ export default function Card({ car, index, layout = "default" }) {
             </div>
           </div>
 
-          <button
+          <motion.button
             onClick={handleRentNow}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300 text-sm sm:text-base w-full sm:w-auto"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Rent Now
-          </button>
+          </motion.button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

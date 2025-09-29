@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Landing from "./Pages/Landing";
 import Dashboard from "./Pages/Dashboard";
 import CarRentalBooking from "./Pages/CarRentalBooking";
+import DashboardChart from "./Pages/DashboardChart";
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" Component={Landing} />
           <Route path="/dashboard/:id" Component={Dashboard} />
            <Route path="/rent/:id" Component={CarRentalBooking} /> 
+           <Route path="/dashboardchart" Component={DashboardChart} />
         </Routes>
       {/* </Skeleton> */}
     </Router>

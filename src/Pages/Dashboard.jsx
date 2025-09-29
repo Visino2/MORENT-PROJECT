@@ -4,6 +4,7 @@ import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import SkeletonDashboard from "./SkeletonDashboard";
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -24,6 +25,11 @@ export default function Dashboard() {
 
   if (loading) return <SkeletonDashboard />;
   if (!car) return <p className="text-center text-2xl mt-20">Car not found</p>;
+
+  // Toggle like
+  const toggleLike = (i) => {
+    setLikedCars((prev) => ({ ...prev, [i]: !prev[i] }));
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col">
@@ -65,9 +71,17 @@ export default function Dashboard() {
         {/* HERO + CAR DETAILS + REVIEWS */}
         <section className="flex-1 space-y-10">
           {/* HERO */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <motion.div
+            className="grid md:grid-cols-2 gap-6"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
             {/* Left: Hero Info */}
-            <div className="bg-[#3563E9] text-white rounded-xl p-6">
+            <motion.div
+              className="bg-[#3563E9] text-white rounded-xl p-6"
+              whileHover={{ scale: 1.02 }}
+            >
               <h2 className="text-xl font-semibold mb-2">
                 Sports car with the best design and acceleration
               </h2>
@@ -83,24 +97,26 @@ export default function Dashboard() {
               {/* Thumbnails (Desktop) */}
               <div className="hidden md:flex gap-3 mt-4">
                 {[car.image, "/View-2.jpg", "/View-3.jpg"].map((img, i) => (
-                  <img
+                  <motion.img
                     key={i}
                     src={img}
                     alt={`thumb-${i}`}
                     className={`w-20 h-16 rounded-lg object-cover cursor-pointer border ${mainImage === img ? "border-blue-500" : "border-transparent"}`}
+                    whileHover={{ scale: 1.1 }}
                     onClick={() => setMainImage(img)}
                   />
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* Thumbnails (Mobile) */}
             <div className="md:hidden flex gap-3">
               {[car.image, "/View-2.jpg", "/View-3.jpg"].map((img, i) => (
-                <img
+                <motion.img
                   key={i}
                   src={img}
                   alt={`thumb-mobile-${i}`}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setMainImage(img)}
                   className={`w-24 h-20 rounded-lg object-cover cursor-pointer border ${mainImage === img ? "border-blue-500" : "border-transparent"}`}
                 />
@@ -108,7 +124,12 @@ export default function Dashboard() {
             </div>
 
             {/* Right: Car Details */}
-            <div className="bg-white shadow rounded-xl p-6">
+            <motion.div
+              className="bg-white shadow rounded-xl p-6"
+              initial={{ opacity: 0, x: 60 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
               <div className="flex justify-between items-start">
                 <h2 className="text-xl font-bold">{car.name}</h2>
                 <button
@@ -152,57 +173,56 @@ export default function Dashboard() {
                     ${car.price}.00 / day
                   </p>
                 </div>
-                <button
+                <motion.button
                   onClick={() => navigate(`/rent/${idx}`)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300"
                 >
                   Rent Now
-                </button>
+                </motion.button>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-        {/* REVIEWS */}
-          <div className="bg-white shadow rounded-xl p-6">
+          {/* REVIEWS */}
+          <motion.div
+            className="bg-white shadow rounded-xl p-6"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
             <h3 className="font-semibold mb-4">Reviews (13)</h3>
             <div className="space-y-6">
-              {/* Review 1 */}
-              <div className="flex gap-4">
-                <img src="/user.png" alt="Alex" className="w-12 h-12 rounded-full" />
-                <div className="flex-1">
-                  <div className="flex justify-between">
-                    <div>
-                      <h4 className="font-semibold">Alex Stanton</h4>
-                      <h4 className="text-gray-400 text-sm">CEO at Bukalapak</h4>
+              {[ // reviews array for DRY code
+                { name: "Alex Stanton", role: "CEO at Bukalapak", img: "/user.png", text: "We are very happy with the service from the MORENT App.", date: "21 July 2022" },
+                { name: "Skylar Dias", role: "CEO at Amazon", img: "/user-2.png", text: "We are greatly helped by the services of the MORENT Application.", date: "20 July 2022" }
+              ].map((rev, i) => (
+                <motion.div
+                  key={i}
+                  className="flex gap-4"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.2, duration: 0.6 }}
+                  viewport={{ once: true }}
+                >
+                  <img src={rev.img} alt={rev.name} className="w-12 h-12 rounded-full" />
+                  <div className="flex-1">
+                    <div className="flex justify-between">
+                      <div>
+                        <h4 className="font-semibold">{rev.name}</h4>
+                        <h4 className="text-gray-400 text-sm">{rev.role}</h4>
+                      </div>
+                      <span className="text-sm text-gray-400">{rev.date}</span>
                     </div>
-                    <span className="text-sm text-gray-400">21 July 2022</span>
+                    <p className="text-sm text-gray-600 mt-2">{rev.text}</p>
+                    <div className="text-yellow-400 mt-2">★★★★☆</div>
                   </div>
-                  <p className="text-sm text-gray-600 mt-2">
-                    We are very happy with the service from the MORENT App.
-                  </p>
-                  <div className="text-yellow-400 mt-2">★★★★☆</div>
-                </div>
-              </div>
-
-              {/* Review 2 */}
-              <div className="flex gap-4">
-                <img src="/user-2.png" alt="Skylar" className="w-12 h-12 rounded-full" />
-                <div className="flex-1">
-                  <div className="flex justify-between">
-                    <div>
-                      <h4 className="font-semibold">Skylar Dias</h4>
-                      <h4 className="text-gray-400 text-sm">CEO at Amazon</h4>
-                    </div>
-                    <span className="text-sm text-gray-400">20 July 2022</span>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-2">
-                    We are greatly helped by the services of the MORENT Application.
-                  </p>
-                  <div className="text-yellow-400 mt-2">★★★★☆</div>
-                </div>
-              </div>
+                </motion.div>
+              ))}
             </div>
-          </div>
+          </motion.div>
         </section>
       </main>
 
@@ -218,8 +238,18 @@ export default function Dashboard() {
           </div>
           <div className="flex gap-4 overflow-x-auto md:grid md:grid-cols-4 md:gap-6 md:overflow-visible">
             {Cars.slice(0, 3).map((c, i) => (
-              <div key={i} className="flex-shrink-0 w-[280px] md:w-auto">
-                <div className="bg-white rounded-lg shadow-md p-4 relative hover:shadow-lg transition-shadow duration-300">
+              <motion.div
+                key={i}
+                className="flex-shrink-0 w-[280px] md:w-auto"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: i * 0.2 }}
+                viewport={{ once: true }}
+              >
+                <motion.div
+                  className="bg-white rounded-lg shadow-md p-4 relative hover:shadow-lg transition-shadow duration-300"
+                  whileHover={{ scale: 1.03 }}
+                >
                   {/* Like Button */}
                   <div
                     className="absolute top-4 right-4 cursor-pointer hover:scale-110 transition"
@@ -236,14 +266,16 @@ export default function Dashboard() {
                   <img src={c.image} alt={c.name} className="w-full h-40 object-contain mb-4" />
                   <p className="mt-3 text-blue-600 font-bold">${c.price}.00/day</p>
                   {/* Rent Now Button */}
-                  <button
+                  <motion.button
                     onClick={() => navigate(`/rent/${i + 100}`)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300"
                   >
                     Rent Now
-                  </button>
-                </div>
-              </div>
+                  </motion.button>
+                </motion.div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -258,8 +290,18 @@ export default function Dashboard() {
           </div>
           <div className="flex gap-4 overflow-x-auto md:grid md:grid-cols-4 md:gap-6 md:overflow-visible">
             {Cars.slice(3, 6).map((c, i) => (
-              <div key={i} className="flex-shrink-0 w-[280px] md:w-auto">
-                <div className="bg-white rounded-lg shadow-md p-4 relative hover:shadow-lg transition-shadow duration-300">
+              <motion.div
+                key={i}
+                className="flex-shrink-0 w-[280px] md:w-auto"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: i * 0.2 }}
+                viewport={{ once: true }}
+              >
+                <motion.div
+                  className="bg-white rounded-lg shadow-md p-4 relative hover:shadow-lg transition-shadow duration-300"
+                  whileHover={{ scale: 1.03 }}
+                >
                   {/* Like Button */}
                   <div
                     className="absolute top-4 right-4 cursor-pointer hover:scale-110 transition"
@@ -276,14 +318,16 @@ export default function Dashboard() {
                   <img src={c.image} alt={c.name} className="w-full h-40 object-contain mb-4" />
                   <p className="mt-3 text-blue-600 font-bold">${c.price}.00/day</p>
                   {/* Rent Now Button */}
-                  <button
+                  <motion.button
                     onClick={() => navigate(`/rent/${i + 200}`)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300"
                   >
                     Rent Now
-                  </button>
-                </div>
-              </div>
+                  </motion.button>
+                </motion.div>
+              </motion.div>
             ))}
           </div>
         </div>
