@@ -44,7 +44,8 @@ export default function Navbar({ darkMode, setDarkMode }) {
         <div className="flex items-center gap-4">
           {/* Dark Mode Toggle */}
           <button
-            onClick={() => setDarkMode(!darkMode)}
+            onClick={() => setDarkMode(!darkMode)}npm run dev
+            
             className="p-2 rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
           >
             {darkMode ? <Sun size={20} /> : <Moon size={20} />}
