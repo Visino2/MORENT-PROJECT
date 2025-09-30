@@ -6,7 +6,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
 
   return (
     <nav
-      className={`shadow-sm border-b transition-colors duration-300 ${
+      className={`shadow-sm border-b transition-colors duration-300 sticky top-0 z-50 ${
         darkMode ? "bg-gray-900 text-white border-gray-700" : "bg-white text-gray-800 border-gray-100"
       }`}
     >
@@ -45,7 +45,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
           {/* Dark Mode Toggle */}
           <button
             onClick={() => setDarkMode(!darkMode)}npm run dev
-            
+
             className="p-2 rounded-full transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
           >
             {darkMode ? <Sun size={20} /> : <Moon size={20} />}

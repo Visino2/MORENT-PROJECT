@@ -4,6 +4,9 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import Navbar from "../Components/Navbar";
 import Routing from "../Components/Routing"; 
 import { motion } from "framer-motion";
+import SkeletonChart from "../Pages/SkeletonChart";
+import { useNavigate } from "react-router-dom";
+
 
 
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -19,7 +22,7 @@ const customIcon = new L.Icon({
 export default function DashboardChart() {
   const [darkMode, setDarkMode] = useState(false);
   
-  // Chart data
+  // Chart data for top 5 car rentals
   const [chartData] = useState([
     { name: "Sport Car", value: 17439, color: "#0D3559" },
     { name: "SUV", value: 9478, color: "#175D9C" },
@@ -28,7 +31,7 @@ export default function DashboardChart() {
     { name: "MPV", value: 14406, color: "#A6CEF2" },
   ]);
 
-  // Transaction data with car images
+  // Recent transactions data
   const [transactions] = useState([
     { car: "Nissan GT - R", type: "Sport Car", amount: 80, date: "20 July", image: "/NissanGT-R.png" },
     { car: "Koegnigsegg", type: "Sport Car", amount: 99, date: "19 July", image: "/Koenigsegg.png" },
@@ -44,12 +47,28 @@ export default function DashboardChart() {
     image: "/NissanGT-R.png"
   });
 
-  // Calculate total rentals
+
   const totalRentals = chartData.reduce((sum, item) => sum + item.value, 0);
 
   const handleLogout = () => {
     alert("Logged out!");
   };
+    const navigate = useNavigate();
+   
+       const [loading, setLoading ] = useState(true);
+   
+       useEffect(() => {
+           setTimeout(() => {
+               setLoading(false);
+           }, 3000);
+       }, []);
+   
+   
+       if (loading) {
+           return (
+               <SkeletonChart />
+           )
+       }
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${darkMode ? "dark" : ""}`}>
@@ -134,29 +153,29 @@ export default function DashboardChart() {
               
               {/* Map */}
              <div className="h-64 rounded-lg overflow-hidden mb-6">
-         <MapContainer center={[6.5244, 3.3792]} zoom={12} className="h-full w-full">
-       <TileLayer
-         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-         attribution='&copy; OpenStreetMap'
-        />
+                <MapContainer center={[6.5244, 3.3792]} zoom={12} className="h-full w-full">
+                <TileLayer
+                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                 attribution='&copy; OpenStreetMap'
+                />
 
     
-       <Marker position={[6.5244, 3.3792]} icon={customIcon}>
-      <Popup>
-        Lagos, Nigeria <img src="/Rolls-Royce.png" alt="" />
-      </Popup>
-       </Marker>
+               <Marker position={[6.5244, 3.3792]} icon={customIcon}>
+                <Popup>
+                 Lagos, Nigeria <img src="/Rolls-Royce.png" alt="" />
+                </Popup>
+                </Marker>
 
     
-        <Marker position={[6.4654, 3.4064]} icon={customIcon}>
-         <Popup>
-          Another Location <img src="/Koenigsegg.png" alt="" />
-          </Popup>
-         </Marker>
+              <Marker position={[6.4654, 3.4064]} icon={customIcon}>
+              <Popup>
+               Another Location <img src="/Koenigsegg.png" alt="" />
+              </Popup>
+              </Marker>
 
-       <Routing from={[6.5244, 3.3792]} to={[6.4654, 3.4064]} />
-        </MapContainer>
-      </div>
+              <Routing from={[6.5244, 3.3792]} to={[6.4654, 3.4064]} />
+              </MapContainer>
+            </div>
 
 
 

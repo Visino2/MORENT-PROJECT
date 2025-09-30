@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 export default function SkeletonLoader() {
 return (
 <div className="min-h-screen bg-gray-50 animate-pulse">
-    <div className="flex justify-between items-center p-4 bg-white border-b border-gray-200">
+    <div className="flex justify-between items-center p-4 bg-white border-b border-gray-200 sticky top-0 z-50">
                 <div className="h-5 bg-blue-400 rounded w-20 animate-pulse"></div>
                 <div className="flex-1 mx-8 relative max-w-md">
                     <div className="bg-gray-100 rounded-full w-full h-[44px] animate-pulse flex items-center px-4 space-x-2">

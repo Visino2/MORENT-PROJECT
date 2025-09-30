@@ -5,7 +5,6 @@ import Footer from "../Components/Footer";
 import { motion } from "framer-motion";
 import SkeletonLoader from "../Pages/SkeletonLoader"
 import React, { useState, useEffect } from "react";
-import DashboardChart from "../Pages/DashboardChart";
 
 
 
