@@ -1,197 +1,231 @@
-// src/pages/SignUp.jsx
-import React, { useState, useEffect } from "react";
-import { FcGoogle } from "react-icons/fc";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { auth, provider, db } from "../Firebase";
 import {
-  signInWithPopup,
-  onAuthStateChanged,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  signInWithPopup,
   updateProfile,
 } from "firebase/auth";
-import { auth, googleAuthProvider } from "../Firebase";
-import { motion } from "framer-motion";
-import { Eye, EyeOff } from "lucide-react";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom"; // ✅ import navigate
 
 export default function SignUp() {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-
-  const [isSignUp, setIsSignUp] = useState(false); // toggle between Sign In / Sign Up
   const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // ✅ Redirect if already logged in
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) navigate("/dashboard");
-    });
-    return () => unsubscribe();
-  }, [navigate]);
+  const navigate = useNavigate(); // ✅ initialize navigate
 
-  // ✅ Google sign-in
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    setErrorMsg("");
-    try {
-      const result = await signInWithPopup(auth, googleAuthProvider);
-      const user = result.user;
-      localStorage.setItem("authUser", JSON.stringify(user));
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Google Sign-In Error:", error.message);
-      setErrorMsg("Failed to sign in with Google.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ✅ Email/Password (Login or Sign Up)
-  const handleEmailAuth = async (e) => {
+  // Email + Password Signup
+  const handleSignUp = async (e) => {
     e.preventDefault();
+    if (!fullName || !phone || !email || !password) {
+      setError("All fields are required.");
+      return;
+    }
+
+    setError("");
     setLoading(true);
-    setErrorMsg("");
-
     try {
-      if (isSignUp) {
-        // 🔹 Create new account
-        const result = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(result.user, { displayName: fullName });
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(result.user, { displayName: fullName });
 
-        localStorage.setItem("authUser", JSON.stringify(result.user));
-        navigate("/dashboard");
-      } else {
-        // 🔹 Login existing account
-        const result = await signInWithEmailAndPassword(auth, email, password);
-        localStorage.setItem("authUser", JSON.stringify(result.user));
-        navigate("/dashboard");
-      }
+      await setDoc(doc(db, "users", result.user.uid), {
+        fullName,
+        phone,
+        email,
+        uid: result.user.uid,
+        createdAt: new Date(),
+      });
+
+      // ✅ Navigate to landing instead of reload
+      setTimeout(() => {
+        navigate("/landing");
+      }, 2000);
     } catch (error) {
-      console.error("Auth Error:", error.message);
-      setErrorMsg("Something went wrong. Please try again.");
-    } finally {
+      setError(error.message);
       setLoading(false);
     }
   };
+
+  // Google Sign Up
+  const handleGoogleSignUp = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          fullName: user.displayName || "",
+          phone: "",
+          email: user.email,
+          uid: user.uid,
+          createdAt: new Date(),
+        });
+      }
+
+      // ✅ Navigate properly
+      setTimeout(() => {
+        navigate("/landing");
+      }, 1200);
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
+  // Loader view
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 gap-4">
+        <div className="loader"></div>
+        <p className="text-gray-600 text-sm">Creating your account...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="bg-white p-10 shadow-2xl rounded-2xl w-[400px]"
-      >
-        <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-8">
-          {isSignUp ? "Create Account ✨" : "Welcome Back 👋"}
-        </h1>
+    <div className="items-center bg-gray-100 min-h-screen flex flex-col justify-center">
+      {/* Main Card */}
+      <main className="bg-white max-auto max-w-md w-full px-8 py-10 rounded-xl shadow-lg">
+        <h2 className="text-2xl font-bold mb-1">Create Account</h2>
+        <p className="text-sm text-gray-600 mb-6">Join us today 🚀</p>
 
-        {/* Google Button */}
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={handleGoogleSignIn}
-          disabled={loading}
-          className="flex items-center justify-center gap-3 bg-white border border-gray-300 px-4 py-3 rounded-xl shadow-md hover:shadow-lg transition w-full font-medium text-gray-700 disabled:opacity-70"
-        >
-          {loading ? (
-            <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          ) : (
-            <FcGoogle size={24} />
-          )}
-          <span>{loading ? "Loading..." : "Continue with Google"}</span>
-        </motion.button>
-
-        {/* Error Message */}
-        {errorMsg && (
-          <p className="mt-4 text-center text-red-500 text-sm font-medium">
-            {errorMsg}
-          </p>
-        )}
-
-        {/* Divider */}
-        <div className="flex items-center my-6">
-          <hr className="flex-1 border-gray-300" />
-          <span className="px-3 text-gray-500 text-sm">OR</span>
-          <hr className="flex-1 border-gray-300" />
-        </div>
-
-        {/* Email/Password form */}
-        <form onSubmit={handleEmailAuth} className="space-y-4">
-          {isSignUp && (
-            <input
-              type="text"
-              placeholder="Full Name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-              required
-            />
-          )}
-
-          <input
-            type="email"
-            placeholder="Email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-            required
-          />
-
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none pr-10"
-              required
-            />
+        {/* Error message */}
+        {error && (
+          <div className="mb-4 text-center">
+            <p className="text-red-500 text-sm mb-2">{error}</p>
             <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+              onClick={() => setError("")}
+              className="text-blue-600 text-sm underline"
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              Try Again
             </button>
           </div>
+        )}
 
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+        <form onSubmit={handleSignUp} className="space-y-6">
+          {/* Google Sign Up */}
+          <button
+            type="button"
+            onClick={handleGoogleSignUp}
+            className="w-full flex items-center justify-center gap-2 border border-gray-400 rounded-lg py-2 mb-4 hover:bg-gray-50 transition"
           >
-            {loading ? "Please wait..." : isSignUp ? "Sign Up" : "Sign In"}
-          </motion.button>
+            <img
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="google"
+              className="w-5 h-5"
+            />
+            <span className="text-sm font-medium text-gray-700">
+              Sign Up with Google
+            </span>
+          </button>
+
+          <div className="text-center text-sm text-gray-400">
+            or Sign Up with Email
+          </div>
+
+          {/* Full Name */}
+          <div>
+            <label htmlFor="fullname" className="block text-sm font-medium mb-1">
+              Full Name
+            </label>
+            <input
+              type="text"
+              id="fullname"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+              placeholder="Victor Aba"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label htmlFor="phone" className="block text-sm font-medium mb-1">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              placeholder="+234 812 345 6789"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="victor@gmail.com"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
+
+          {/* Password */}
+          <div className="mb-2 relative">
+            <label htmlFor="password" className="block text-sm font-medium mb-1">
+              Password
+            </label>
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-[37px] text-sm text-gray-400 cursor-pointer select-none"
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </span>
+          </div>
+
+          {/* Submit */}
+          <div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-2 rounded-md font-medium hover:bg-blue-700 transition disabled:bg-blue-300"
+            >
+              Sign Up
+            </button>
+          </div>
         </form>
 
-        {/* Footer Toggle */}
-        <p className="mt-6 text-center text-sm text-gray-500">
-          {isSignUp ? (
-            <>
-              Already have an account?{" "}
-              <span
-                onClick={() => setIsSignUp(false)}
-                className="text-blue-600 cursor-pointer hover:underline"
-              >
-                Sign in
-              </span>
-            </>
-          ) : (
-            <>
-              Don’t have an account?{" "}
-              <span
-                onClick={() => setIsSignUp(true)}
-                className="text-blue-600 cursor-pointer hover:underline"
-              >
-                Sign up
-              </span>
-            </>
-          )}
+        {/* Footer */}
+        <p className="text-center text-sm text-gray-600 mt-6">
+          Already have an account?{" "}
+          <a
+            href="/signin"
+            className="text-blue-600 font-medium hover:underline"
+          >
+            Login
+          </a>
         </p>
-      </motion.div>
+      </main>
     </div>
   );
 }

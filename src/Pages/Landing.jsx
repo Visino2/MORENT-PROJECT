@@ -13,18 +13,14 @@ import { motion } from "framer-motion";
 
     const [loading, setLoading ] = useState(true);
 
-    useEffect(() => {
-        setTimeout(() => {
-            setLoading(false);
-        }, 3000);
-    }, []);
-
-
-    if (loading) {
-        return (
-            <Skeleton />
-        )
-    }
+   useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1200);
+    return () => clearTimeout(timer);
+   }, []);
+   
+   if (loading) {
+    return <Skeleton />
+   }
 
     
   return (
@@ -47,12 +43,13 @@ import { motion } from "framer-motion";
             <p className="mb-7">
               Ease of doing car rental safely and reliably. Of course at low price.
             </p>
-            <motion.button
-              className="text-white bg-[#3563E9] px-4 py-2 font-semibold rounded w-fit hover:bg-blue-800"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+           <motion.button
+             onClick={() => navigate(`/dashboard/0`)}
+             className="text-white bg-[#3563E9] px-4 py-2 font-semibold rounded w-fit hover:bg-blue-800"
+             whileHover={{ scale: 1.05 }}
+             whileTap={{ scale: 0.95 }}
             >
-              Rental Car
+             Rental Car
             </motion.button>
             <motion.div
               className="flex justify-center mt-0"
@@ -82,13 +79,14 @@ import { motion } from "framer-motion";
             <p className="mb-7">
               Providing cheap car rental services and safe and comfortable facilities
             </p>
-            <motion.button
+           <motion.button
+              onClick={() => navigate(`/dashboard/1`)}
               className="text-white bg-[#54A6FF] px-4 py-2 font-semibold rounded w-fit hover:bg-blue-900"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+               whileHover={{ scale: 1.05 }}
+               whileTap={{ scale: 0.95 }}
             >
-              Rental Car
-            </motion.button>
+                Rental Car
+             </motion.button>
             <motion.div
               className="flex justify-center mt-0"
               initial={{ opacity: 0, scale: 0.9 }}

@@ -1,24 +1,72 @@
-import Skeleton from "./Pages/Skeleton";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./hooks/AuthContext";
 import Landing from "./Pages/Landing";
 import Dashboard from "./Pages/Dashboard";
 import CarRentalBooking from "./Pages/CarRentalBooking";
 import DashboardChart from "./Pages/DashboardChart";
+import SignIn from "./Components/SignIn";
+import SignUp from "./Components/SignUp";
+import ProtectedRoute from "./Components/ProtectedRoute";
+import PublicRoute from "./Components/PublicRoute";
 
-
-function App() {
+export default function App() {
   return (
-    <Router>
-      {/* <Skeleton> */}
+    <AuthProvider>
+      <BrowserRouter>
         <Routes>
-          <Route path="/" Component={Landing} />
-          <Route path="/dashboard/:id" Component={Dashboard} />
-           <Route path="/rent/:id" Component={CarRentalBooking} /> 
-           <Route path="/dashboardchart" Component={DashboardChart} />
+          {/* Public Routes */}
+          <Route
+            path="/"
+            element={
+              <PublicRoute>
+                <SignIn />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <PublicRoute>
+                <SignUp />
+              </PublicRoute>
+            }
+          />
+
+          {/* Protected Routes */}
+          <Route
+            path="/landing"
+            element={
+              <ProtectedRoute>
+                <Landing />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/:id"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/rent/:id"
+            element={
+              <ProtectedRoute>
+                <CarRentalBooking />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboardchart"
+            element={
+              <ProtectedRoute>
+                <DashboardChart />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
-      {/* </Skeleton> */}
-    </Router>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
-
-export default App;

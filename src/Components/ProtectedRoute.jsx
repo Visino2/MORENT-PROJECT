@@ -1,12 +1,23 @@
-import React from "react";
 import { Navigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../Firebase";
+import { useState, useEffect } from "react";
 
 export default function ProtectedRoute({ children }) {
-  const user = JSON.parse(localStorage.getItem("authUser"));
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
-  if (!user) {
-    return <Navigate to="/signin" replace />;
-  }
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+
+  if (!user) return <Navigate to="/signin" replace />;
 
   return children;
 }
