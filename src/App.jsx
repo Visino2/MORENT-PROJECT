@@ -8,11 +8,14 @@ import SignIn from "./Components/SignIn";
 import SignUp from "./Components/SignUp";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import PublicRoute from "./Components/PublicRoute";
+import NetworkBanner from "./Components/NetworkBanner";
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <NetworkBanner />
+
         <Routes>
           {/* Public Routes */}
           <Route
